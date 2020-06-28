@@ -1,2 +1,4 @@
 # Card-Game-Display-Module
-Display module for a single card for any card game that you can play with the Bavarian Schafkopf deck
+
+Shuffels a bavarian Schafkopf deck and shows a single card when a button is pressed.
+When the fourth king is drawn, the game is over.
