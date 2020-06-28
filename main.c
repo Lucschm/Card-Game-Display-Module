@@ -157,11 +157,36 @@ uint8_t state = 0;
 uint8_t brightness = 1; // max 2
 uint8_t br_ctr=0;
 
+uint8_t rotation = 3;
+uint16_t draw_ctr = 0;
+
 void draw_isr(void) {
     uint8_t line = (state>>1)&0b111;
     uint8_t column = (state>>4)&0b111;
+    uint8_t _line = 0;
+    uint8_t _column = 0;
+    rotation = (draw_ctr>>8)&0b11;
+    switch(rotation) {
+        case 0:
+            _line = line;
+            _column = column;
+            break;
+        case 1:
+            _line = column;
+            _column = 7-line;
+            break;
+        case 2:
+            _line = 7-line;
+            _column = 7-column;
+            break;
+        case 3:
+            _line = 7-column;
+            _column = line;
+            break;
+    }
+
     if(~state&1) { // state is even -> set bit to load
-        if(currently_drawing[line]&(1<<column) && br_ctr<brightness) {
+        if(currently_drawing[_line]&(1<<_column) && br_ctr<brightness) {
             PORTB |= (1<<PB2);
         }
         else {
@@ -188,6 +213,7 @@ void draw_isr(void) {
     if(state>=128) {
         state = 0;
         br_ctr++;
+        draw_ctr++;
         if(br_ctr>2)
             br_ctr=0;
     }
