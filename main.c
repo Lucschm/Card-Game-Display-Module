@@ -244,42 +244,38 @@ int main(void)
     for(uint8_t i=0; i<rand()%8; i++)
         draw_next = draw_next->next;
 
+    uint8_t kine_ctr = 0;
+
     card* mixed_start = draw_next->next;
     draw_next->next = draw_next->next->next;
     card* mixed_tail = mixed_start;
 
-    while(1) {
+    currently_drawing = mixed_tail->symbol;
+    if(mixed_tail->symbol == K)
+        kine_ctr++;
+    while(mixed_tail->next) {
+        while(PINC&(1<<PC7));
+        _delay_ms(50);
+        while(~PINC&(1<<PC7));
+        _delay_ms(50);
+        srand(TCNT0);
+
         for(uint8_t i=0; i<rand()%8; i++)
             draw_next = draw_next->next;
         mixed_tail->next = draw_next->next;
         mixed_tail = mixed_tail->next;
         draw_next->next = draw_next->next->next; //wtf
-        if(draw_next == draw_next->next)
-            break;
-    }
-    mixed_tail->next = draw_next;
-    mixed_tail = mixed_tail->next;
-    mixed_tail->next = NULL;
+        if(draw_next == draw_next->next) {
+            mixed_tail->next = draw_next;
+            mixed_tail = mixed_tail->next;
+            mixed_tail->next = NULL;
+        }
 
-    card* current_card = mixed_start;
-
-    uint8_t kine_ctr = 0;
-
-    currently_drawing = current_card->symbol;
-    if(current_card->symbol == K)
-        kine_ctr++;
-    current_card = current_card->next;
-    while(current_card) {
-        while(PINC&(1<<PC7));
-        _delay_ms(50);
-        while(~PINC&(1<<PC7));
-        _delay_ms(50);
         currently_drawing = space;
         _delay_ms(100);
-        currently_drawing = current_card->symbol;
-        if(current_card->symbol == K)
+        currently_drawing = mixed_tail->symbol;
+        if(mixed_tail->symbol == K)
             kine_ctr++;
-        current_card = current_card->next;
 
         if(kine_ctr>=4) {
             while(1) {
