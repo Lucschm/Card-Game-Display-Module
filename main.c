@@ -154,7 +154,7 @@ uint8_t U[] = {
 uint8_t* currently_drawing = space;
 
 uint8_t state = 0;
-uint8_t brightness = 1; // max 2
+uint8_t brightness = 2; // max 2
 uint8_t br_ctr=0;
 
 uint8_t rotation = 3;
